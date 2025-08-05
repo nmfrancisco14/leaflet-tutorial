@@ -1,0 +1,6 @@
+/.quarto/
+.Rproj.user
+/leaflet tutorial_files
+leaflet tutorial.html
+.Rhistory
+leaflet tutorial.Rproj

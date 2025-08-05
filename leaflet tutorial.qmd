@@ -1,0 +1,276 @@
+---
+title: "leaflet tutorial"
+---
+
+## library
+
+```{r}
+#| label: lib
+
+library(leaflet)
+library(dplyr)
+library(RColorBrewer)
+library(sf)
+
+
+```
+
+## Basic map and markers
+
+```{r}
+#| echo: true
+
+
+leaflet() %>%
+  addTiles() %>%
+  setView(lng = 121.774, lat = 12.8797, zoom = 6) %>%
+  addMarkers(lng = 120.9842, lat = 14.5995, popup = "Manila") %>%
+  addMarkers(lng = 125.5017, lat = 8.4753, popup = "Butuan City") |> 
+  addMarkers(lat = 15.671818823094426, lng = 120.89067531956579, popup = "PhilRice")
+
+```
+
+### 🧠 Exercise 1:
+
+**Add a marker for your house and the house of you**
+
+-   Add popups with city names
+
+    Try adjusting the zoom level
+
+## 2. 🌟 Customizing Markers
+
+### Demo
+
+```{r}
+#| echo: true
+
+
+customIcon <- makeIcon(iconUrl ="https://raw.githubusercontent.com/nmfrancisco14/phl_maps/master/DAC - LOGO OFFICIAL.png",                          iconWidth = 100, 
+                       iconHeight = 100 )
+leaflet() %>%   
+  addTiles() %>%
+  setView(lng = 121.774, lat = 12.8797, zoom = 6) |>
+  addMarkers(lat = 15.671818823094426, lng = 120.89067531956579, icon = customIcon, popup = "Data Analytics Center") 
+```
+
+### 🧠 Exercise 2:
+
+Use a different PNG icon (e.g. from Wikimedia or GitHub) and place it in Cebu or Davao.
+
+-   What happens if you change the icon size?
+
+-   Try using different shapes or logos.
+
+## 3. 🧭 Polygons & Polylines
+
+### Load boundaries:
+
+```{r}
+#| echo: true
+
+ph_province <- st_read("https://raw.githubusercontent.com/nmfrancisco14/phl_maps/master/phl_provinces_ncr-districts_icc.geojson")
+
+```
+
+### Demo: Add polygon boundaries
+
+```{r}
+#| echo: true
+
+leaflet(ph_province) %>%
+  addTiles() %>%
+  addPolygons(fillColor = "lightblue", fillOpacity = 0.5, color = "black", weight = 1) 
+```
+
+### Demo: Draw a path
+
+```{r}
+#| echo: true
+
+coords <- data.frame(   
+  lng = c(120.9842, 121.7740, 122.5644),   
+  lat = c(14.5995, 12.8797, 11.0046) )
+
+
+leaflet() %>%   
+  addTiles() %>%   
+  addPolylines(data = coords, lng = ~lng, lat = ~lat, color = "red", weight = 2) 
+```
+
+### 🧠 Exercise 3:
+
+-   Modify the polygon fill color.
+
+-   Create a polyline connecting Cebu → Tacloban → Davao.
+
+## 4. 🔵 Circles
+
+### Demo:
+
+```{r}
+#| echo: true
+
+
+leaflet() %>%
+  addTiles() %>%
+  setView(lng = 121.774, lat = 12.8797, zoom = 6) |>
+  addCircles(lng = 121.774, 
+             lat = 12.8797, 
+             radius = 50000,
+             color = "blue", 
+             fillColor = "blue", 
+             fillOpacity = 0.5,              
+             popup = "Central PH") 
+```
+
+### 🧠 Exercise 4:
+
+Add a circle around Davao with a 30km radius. Try different fillOpacity and popup text.
+
+## 5. 💬 Popups & Labels
+
+### Demo:
+
+```{r}
+#| echo: true
+
+
+leaflet() %>%   
+  setView(lng = 121.774, lat = 12.8797, zoom = 6) |>
+  addTiles() %>%   
+  addMarkers(     lng = 123.8854, lat = 10.3157,     
+                  popup = "<b>Cebu City</b><br>Queen City of the South",     
+                  label = "Hover for label"   ) 
+```
+
+### 🧠 Exercise 5:
+
+Add a marker for Vigan with:
+
+-   Bold popup text
+
+-   Label text with italics
+
+## 6. 🗺️ Basemaps & Layers
+
+### Demo:
+
+```{r}
+#| echo: true
+#| eval: false
+
+
+# lists
+browseURL("https://leaflet-extras.github.io/leaflet-providers/preview/")
+  
+
+```
+
+```{r}
+#| echo: true
+
+
+leaflet() %>%   
+  addProviderTiles("CartoDB.Positron") %>%   
+  addProviderTiles("OpenStreetMap.Mapnik", group = "MapNik") |> 
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%   
+  addLayersControl(baseGroups = c("CartoDB.Positron", "MapNik","Satellite"),     
+                   options = layersControlOptions(collapsed = FALSE)   ) %>%
+  setView(lat = 12.8797, lng = 121.7740, zoom = 6) 
+```
+
+### 🧠 Exercise 6:
+
+-   Add a new tile layer:
+
+-   Add 3 base layers, and test switching views
+
+## 7. 🏷️ Legends
+
+### Demo: Categorical
+
+```{r}
+#| echo: true
+
+phl_data <-  read.csv("https://raw.githubusercontent.com/nmfrancisco14/phl_maps/master/phl_data.csv")
+
+
+ph_mapdata <- 
+  ph_province |> 
+  left_join(phl_data |> 
+              select(islandGroup,province=location,Production:SuffRatio))
+
+
+colors <- colorFactor(c("darkgreen", "orange", "blue"), 
+                      domain = c("Luzon", "Visayas", "Mindanao"))
+
+
+
+leaflet(ph_mapdata) %>%   
+  addTiles() %>%   
+  addPolygons(fillColor = ~colors(islandGroup), 
+              fillOpacity = 0.6, color = "white") %>%   
+  addLegend("bottomright", 
+            pal = colors, 
+            values = ~islandGroup, 
+             title = "Island Group") 
+```
+
+### 🧠 Exercise 7:
+
+-   Change the colors in `colorFactor()` (e.g., use `"red", "yellow", "green"`)
+
+-   Try positioning the legend at `"topright"`
+
+## 8. 🌡️ Choropleth Mapping
+
+### Demo: Numeric variable
+
+```{r}
+
+#| echo: true
+
+
+
+pal <- colorNumeric("YlOrRd", domain = ph_mapdata$population)  
+
+leaflet(ph_mapdata) %>%   
+  addTiles() %>%   
+  addPolygons(fillColor = ~pal(population), 
+              weight = 1,               
+              fillOpacity = 0.7, color = "white",               
+              popup = ~paste0(province, ": ", format(population, big.mark=","))) %>%   
+  addLegend("bottomright", 
+            pal = pal, 
+            values = ~population,             
+            title = "Population") 
+```
+
+### 🧠 Exercise 8:
+
+-   Map new numeric variable it using a new color palette like `"Greens"` or `"PuBu"`
+
+-   
+
+## ✅ Wrap-Up & Practice Ideas
+
+### 🎯 Challenges:
+
+-   Create a choropleth map showing yield groups
+
+-   Create a map highlighting the top 10 and bottom 10 on production, area , yield and sufficiency ratio
+
+-   
+
+### 💾 Save Your Map:
+
+```{r}
+#| echo: true
+#| eval: false
+library(htmlwidgets) 
+
+
+saveWidget(widget = last_map(), file = "my_leaflet_map.html") 
+
+```
