@@ -6,7 +6,7 @@ title: "leaflet tutorial"
 
 ```{r}
 #| label: lib
-
+#| warning: false
 library(leaflet)
 library(dplyr)
 library(RColorBrewer)
@@ -21,10 +21,10 @@ library(sf)
 #| echo: true
 
 
-leaflet() %>%
-  addTiles() %>%
-  setView(lng = 121.774, lat = 12.8797, zoom = 6) %>%
-  addMarkers(lng = 120.9842, lat = 14.5995, popup = "Manila") %>%
+leaflet() |>
+  addTiles() |>
+  setView(lng = 121.774, lat = 12.8797, zoom = 6) |>
+  addMarkers(lng = 120.9842, lat = 14.5995, popup = "Manila") |>
   addMarkers(lng = 125.5017, lat = 8.4753, popup = "Butuan City") |> 
   addMarkers(lat = 15.671818823094426, lng = 120.89067531956579, popup = "PhilRice")
 
@@ -36,7 +36,7 @@ leaflet() %>%
 
 -   Add popups with city names
 
-    Try adjusting the zoom level
+-   Try adjusting the zoom level
 
 ## 2. 🌟 Customizing Markers
 
@@ -46,12 +46,18 @@ leaflet() %>%
 #| echo: true
 
 
-customIcon <- makeIcon(iconUrl ="https://raw.githubusercontent.com/nmfrancisco14/phl_maps/master/DAC - LOGO OFFICIAL.png",                          iconWidth = 100, 
-                       iconHeight = 100 )
-leaflet() %>%   
-  addTiles() %>%
+customIcon <- makeIcon(
+  iconUrl ="https://raw.githubusercontent.com/nmfrancisco14/phl_maps/master/DAC - LOGO OFFICIAL.png",
+  iconWidth = 100,
+  iconHeight = 100 )
+
+
+leaflet() |>   
+  addTiles() |>
   setView(lng = 121.774, lat = 12.8797, zoom = 6) |>
-  addMarkers(lat = 15.671818823094426, lng = 120.89067531956579, icon = customIcon, popup = "Data Analytics Center") 
+  addMarkers(lat = 15.671818823094426, 
+             lng = 120.89067531956579, 
+             icon = customIcon, popup = "Data Analytics Center") 
 ```
 
 ### 🧠 Exercise 2:
@@ -69,7 +75,8 @@ Use a different PNG icon (e.g. from Wikimedia or GitHub) and place it in Cebu or
 ```{r}
 #| echo: true
 
-ph_province <- st_read("https://raw.githubusercontent.com/nmfrancisco14/phl_maps/master/phl_provinces_ncr-districts_icc.geojson")
+ph_province <- st_read(
+  "https://raw.githubusercontent.com/nmfrancisco14/phl_maps/master/phl_provinces_ncr-districts_icc.geojson")
 
 ```
 
@@ -78,9 +85,12 @@ ph_province <- st_read("https://raw.githubusercontent.com/nmfrancisco14/phl_maps
 ```{r}
 #| echo: true
 
-leaflet(ph_province) %>%
-  addTiles() %>%
-  addPolygons(fillColor = "lightblue", fillOpacity = 0.5, color = "black", weight = 1) 
+leaflet(ph_province) |>
+  addTiles() |>
+  addPolygons(fillColor = "lightblue", 
+              fillOpacity = 0.5, 
+              color = "black", 
+              weight = 1) 
 ```
 
 ### Demo: Draw a path
@@ -93,9 +103,13 @@ coords <- data.frame(
   lat = c(14.5995, 12.8797, 11.0046) )
 
 
-leaflet() %>%   
-  addTiles() %>%   
-  addPolylines(data = coords, lng = ~lng, lat = ~lat, color = "red", weight = 2) 
+leaflet() |>   
+  addTiles() |>   
+  addPolylines(data = coords, 
+               lng = ~lng, 
+               lat = ~lat, 
+               color = "red", 
+               weight = 2) 
 ```
 
 ### 🧠 Exercise 3:
@@ -112,8 +126,8 @@ leaflet() %>%
 #| echo: true
 
 
-leaflet() %>%
-  addTiles() %>%
+leaflet() |>
+  addTiles() |>
   setView(lng = 121.774, lat = 12.8797, zoom = 6) |>
   addCircles(lng = 121.774, 
              lat = 12.8797, 
@@ -136,12 +150,14 @@ Add a circle around Davao with a 30km radius. Try different fillOpacity and popu
 #| echo: true
 
 
-leaflet() %>%   
+leaflet() |>   
   setView(lng = 121.774, lat = 12.8797, zoom = 6) |>
-  addTiles() %>%   
-  addMarkers(     lng = 123.8854, lat = 10.3157,     
-                  popup = "<b>Cebu City</b><br>Queen City of the South",     
-                  label = "Hover for label"   ) 
+  addTiles() |>   
+  addMarkers(     
+    lng = 123.8854, 
+    lat = 10.3157,     
+    popup = "<b>Cebu City</b><br>Queen City of the South",
+    label = "Hover for label") 
 ```
 
 ### 🧠 Exercise 5:
@@ -171,12 +187,12 @@ browseURL("https://leaflet-extras.github.io/leaflet-providers/preview/")
 #| echo: true
 
 
-leaflet() %>%   
-  addProviderTiles("CartoDB.Positron") %>%   
+leaflet() |>   
+  addProviderTiles("CartoDB.Positron") |>   
   addProviderTiles("OpenStreetMap.Mapnik", group = "MapNik") |> 
-  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%   
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") |>   
   addLayersControl(baseGroups = c("CartoDB.Positron", "MapNik","Satellite"),     
-                   options = layersControlOptions(collapsed = FALSE)   ) %>%
+                   options = layersControlOptions(collapsed = FALSE)   ) |>
   setView(lat = 12.8797, lng = 121.7740, zoom = 6) 
 ```
 
@@ -207,10 +223,10 @@ colors <- colorFactor(c("darkgreen", "orange", "blue"),
 
 
 
-leaflet(ph_mapdata) %>%   
-  addTiles() %>%   
+leaflet(ph_mapdata) |>   
+  addTiles() |>   
   addPolygons(fillColor = ~colors(islandGroup), 
-              fillOpacity = 0.6, color = "white") %>%   
+              fillOpacity = 0.6, color = "white") |>   
   addLegend("bottomright", 
             pal = colors, 
             values = ~islandGroup, 
@@ -235,12 +251,12 @@ leaflet(ph_mapdata) %>%
 
 pal <- colorNumeric("YlOrRd", domain = ph_mapdata$population)  
 
-leaflet(ph_mapdata) %>%   
-  addTiles() %>%   
+leaflet(ph_mapdata) |>   
+  addTiles() |>   
   addPolygons(fillColor = ~pal(population), 
               weight = 1,               
               fillOpacity = 0.7, color = "white",               
-              popup = ~paste0(province, ": ", format(population, big.mark=","))) %>%   
+              popup = ~paste0(province, ": ", format(population, big.mark=","))) |>   
   addLegend("bottomright", 
             pal = pal, 
             values = ~population,             
@@ -251,8 +267,6 @@ leaflet(ph_mapdata) %>%
 
 -   Map new numeric variable it using a new color palette like `"Greens"` or `"PuBu"`
 
--   
-
 ## ✅ Wrap-Up & Practice Ideas
 
 ### 🎯 Challenges:
@@ -261,8 +275,6 @@ leaflet(ph_mapdata) %>%
 
 -   Create a map highlighting the top 10 and bottom 10 on production, area , yield and sufficiency ratio
 
--   
-
 ### 💾 Save Your Map:
 
 ```{r}
@@ -270,7 +282,17 @@ leaflet(ph_mapdata) %>%
 #| eval: false
 library(htmlwidgets) 
 
+map <- leaflet(ph_mapdata) |>   
+  addTiles() |>   
+  addPolygons(fillColor = ~pal(population), 
+              weight = 1,               
+              fillOpacity = 0.7, color = "white",               
+              popup = ~paste0(province, ": ", format(population, big.mark=","))) |>   
+  addLegend("bottomright", 
+            pal = pal, 
+            values = ~population,             
+            title = "Population") 
 
-saveWidget(widget = last_map(), file = "my_leaflet_map.html") 
+saveWidget(widget =map , file = "my_leaflet_map.html") 
 
 ```
